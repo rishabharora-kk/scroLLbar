@@ -2,11 +2,11 @@
 
 **A touch-first scrollbar for long, dense documents.** Skim by recognition with a heading reel, jump precisely through Contents, and return to the exact previous scroll position.
 
-## [Try the live interactive demo](https://raw.githack.com/rishabharora-kk/scroLLbar/main/index.html)
+## [Try the live interactive demo](https://htmlpreview.github.io/?https://github.com/rishabharora-kk/scroLLbar/blob/main/index.html)
 
 [GitHub Pages demo](https://rishabharora-kk.github.io/scroLLbar/) · [Demo source](index.html) · [Library demo](demo/index.html) · [Implementation](src/) · [Tests](tests/)
 
-The **root `index.html` is completely self-contained**: open directly in a browser, without a build, package manager, server, or dependencies. The raw.githack link renders that exact file on the web. A GitHub Pages workflow is included; the owner may need to choose **Settings → Pages → Source: GitHub Actions** before the GitHub Pages URL works.
+The **root `index.html` is completely self-contained**: open directly in a browser, without a build, package manager, server, or dependencies. The HTML Preview link renders that exact GitHub file in a browser (verified with the full 38-chapter document). For an alternative, [raw.githack](https://raw.githack.com/rishabharora-kk/scroLLbar/main/index.html) serves it after a one-time external-content confirmation. A GitHub Pages workflow is included; the owner may need to choose **Settings → Pages → Source: GitHub Actions** before the GitHub Pages URL works.
 
 ### Demo gestures
 
