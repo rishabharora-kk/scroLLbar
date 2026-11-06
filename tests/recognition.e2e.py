@@ -63,7 +63,7 @@ with server(), sync_playwright() as pw:
     grip=page.locator('#grip').bounding_box()
     x=grip['x']+grip['width']-15
     y=grip['y']+grip['height']/2
-    page.mouse.move(x,y);page.mouse.down();page.mouse.move(x,680,steps=9);page.mouse.up()
+    page.mouse.move(x,y);page.mouse.down();page.mouse.move(x,155,steps=9);page.mouse.up()
     after=page.evaluate('document.scrollingElement.scrollTop')
     assert abs(after-start)>30
     assert page.locator('.return').is_visible()
