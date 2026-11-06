@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#faf9f6">
+<title>scroLLbar · Recognition rail experiment</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color-scheme:light;--paper:#faf9f6;--ink:#252c35;--muted:#626c77;--border:#e1ded6;--surface:#fff;--blue:#365f9d;--accent:#d6e7fd}
+*{box-sizing:border-box}html{scroll-behavior:auto}body{margin:0;background:var(--paper);color:var(--ink)}
+button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #4d86df;outline-offset:3px}
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:8px;background:color-mix(in srgb,var(--paper) 96%,transparent);backdrop-filter:blur(12px);padding:11px max(12px,calc((100vw - 1060px)/2));border-bottom:1px solid var(--border);min-height:66px}
+.brand{font-weight:850;letter-spacing:-.06em;font-size:20px;white-space:nowrap}.brand em{font-style:normal;color:var(--blue)}
+.head-actions{display:flex;gap:6px;align-items:center}.head-actions button,.action,.toggle{padding:9px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--border);color:var(--ink);font-size:12px;font-weight:650}
+.head-actions button[aria-pressed=true],.action.primary{background:var(--blue);color:white;border-color:var(--blue)}
+.shell{display:grid;grid-template-columns:minmax(0,690px) 240px;max-width:1040px;margin:0 auto;gap:28px;padding:24px 25px 100px}
+.document{min-width:0;padding-bottom:80px}.eyebrow{text-transform:uppercase;color:var(--blue);font-weight:800;letter-spacing:.13em;font-size:11px;margin:12px 0}
+h1{font-size:clamp(35px,5vw,58px);letter-spacing:-.06em;line-height:1.07;margin:12px 0 20px}
+h2{font-size:clamp(23px,3vw,32px);letter-spacing:-.04em;margin:56px 0 14px}
+p{color:var(--muted);line-height:1.85;font-size:15px;margin:12px 0}.lead{font-size:18px;color:var(--ink)}
+.explanation{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px 20px;margin:23px 0}
+aside{position:sticky;top:90px;align-self:start;padding:17px;background:var(--surface);border:1px solid var(--border);border-radius:14px;max-height:calc(100dvh - 115px);overflow:auto}
+aside h3{margin:0 0 10px;font-size:15px}.outline{display:flex;flex-direction:column;gap:5px}.outline button{font-size:12px;border:0;background:transparent;color:var(--muted);text-align:left;padding:7px 8px;border-radius:6px}.outline button:hover{background:var(--accent)}
+section.chapter{padding-top:10px;margin-top:18px}.landmark{border:1px solid var(--border);background:var(--surface);border-radius:14px;overflow:hidden;margin:24px 0 40px;scroll-margin-top:100px}
+.landmark-top{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px solid var(--border);padding:10px 15px;color:var(--muted);font-size:12px}
+.landmark-top span:first-child{text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.art{height:136px;margin:17px 15px 10px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;font-size:12px}
+.art.grid{background:linear-gradient(0deg,transparent 19%,#fff7 20%,transparent 21%,transparent 39%,#fff7 40%,transparent 41%,transparent 59%,#fff7 60%,transparent 61%,transparent 79%,#fff7 80%,transparent 81%),linear-gradient(90deg,#e1e6ed,#f5f6f7)}
+.art.heat{background:repeating-linear-gradient(90deg,#f1dfc4 0 18px,#a3c5da 18px 33px,#e5a690 33px 48px,#d3e2b1 48px 65px)}
+.art.wave{background:#e1edfd}.art.wave:before{content:"";position:absolute;inset:15%;border:12px solid #5482bc;border-radius:50% 30% 60% 25%;transform:rotate(-20deg)}
+.art.rings{background:#172b42}.art.rings:before{content:"";width:110px;height:110px;border-radius:50%;border:14px solid #efb972;box-shadow:0 0 0 24px #5a8dbb,0 0 0 43px #abcadb}
+.art.quote{height:auto;min-height:110px;padding:20px 24px;background:#f2ede3;color:#594b3d;font-size:18px;font-weight:650;font-family:Georgia,serif;text-align:center;font-style:italic}
+.art.code{background:#222d3f;color:#b1e3c4;font:13px ui-monospace,monospace;white-space:pre;text-align:left;justify-content:flex-start;padding:16px}
+.art.table{height:auto;min-height:125px;background:#f6f8fb;display:block;padding:12px}.art.table table{width:100%;border-collapse:collapse;color:#32445b}.art.table td,.art.table th{font-size:11px;padding:8px;border:1px solid #d4dfec;text-align:left}
+.caption{padding:0 15px;color:var(--ink);font-size:13px;line-height:1.6;font-weight:650}
+.matched{margin:12px 15px 15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.select-target{font-size:12px;background:var(--surface);border:1px solid var(--blue);color:var(--blue);border-radius:9px;padding:7px 12px}
+.kind{font-size:11px;color:var(--muted)}.flag{border-radius:7px;background:#e8f6ea;color:#22613c;padding:4px 8px;font-size:11px}
+.study{border:1px solid #b8cce5;background:#edf3fb;border-radius:15px;padding:17px 18px;margin:22px 0}
+.study h2{margin:0 0 7px;font-size:18px}.study p{font-size:13px;line-height:1.55;color:#394d67}
+.study .actions{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}
+.study select{background:white;border:1px solid #aec6df;border-radius:8px;padding:9px;font-size:12px;max-width:100%}
+.metrics{font-size:12px;color:#334d68;line-height:1.6}.metrics strong{font-variant-numeric:tabular-nums}
+#rail{position:fixed;z-index:18;width:8px;top:var(--railTop,80px);left:var(--railLeft,calc(100vw - 20px));height:var(--railHeight,70vh);pointer-events:none}
+.rail-track{position:absolute;inset:0;background:#4673af24;border-radius:8px}
+.rail-thumb{position:absolute;left:0;top:0;width:8px;height:var(--thumbH,42px);background:#436ead;border-radius:8px;transform:translateY(var(--thumbY,0px));opacity:.85}
+.rail-grip{position:absolute;left:-36px;top:0;width:44px;height:calc(var(--thumbH,42px) + 24px);transform:translateY(calc(var(--thumbY,0px) - 12px));touch-action:none;cursor:grab;pointer-events:auto}
+.rail-grip:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:10px}
+.rail-mark{position:absolute;right:10px;height:5px;width:5px;border-radius:50%;background:#436ead;opacity:.75}
+.rail-mark.visited{width:8px;height:8px;background:#b67d3c}
+.rail-mark.active{width:10px;height:10px;background:#2e6abc}
+.preview{position:absolute;width:min(240px,calc(100vw - 85px));right:24px;top:0;transform:translateY(var(--previewY,0px));background:var(--surface);border:1px solid #c9d6e8;border-radius:15px;padding:11px;box-shadow:0 16px 45px #1a29452f;pointer-events:none;opacity:0;visibility:hidden}
+.rail-previewing .preview{opacity:1;visibility:visible}.preview .art{height:68px;margin:8px 0}.preview .art.quote{min-height:65px;font-size:13px;padding:7px}.preview .art.code{font-size:9px;padding:8px}.preview .art.table{padding:4px;height:70px;min-height:0;overflow:hidden}.preview .art.table td,.preview .art.table th{padding:3px;font-size:8px}
+.preview .meta{font-size:10px;color:var(--blue);font-weight:750;letter-spacing:.08em;text-transform:uppercase}
+.preview strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:7px 0}
+.preview small{font-size:10px;color:var(--muted);line-height:1.4;display:block;min-height:28px;max-height:30px;overflow:hidden}
+.preview footer{font-size:10px;color:var(--blue);margin-top:8px}.rail-previewing.cancel .preview{filter:grayscale(1);background:#edeef0}
+.return{position:fixed;z-index:20;bottom:calc(22px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#1f3e66;color:#fff;border:0;border-radius:24px;padding:12px 17px;box-shadow:0 8px 24px #162b3b45;max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.report{white-space:pre-wrap;max-height:200px;overflow:auto;font-size:11px;background:#e4ecf8;padding:10px;border-radius:10px;display:none}
+@media(max-width:820px){.shell{grid-template-columns:minmax(0,1fr);padding:16px 24px 100px}.desktop-aside{display:none}h1{font-size:38px}}
+@media(max-width:420px){header{padding:9px 12px}.brand{font-size:17px}.head-actions button{padding:8px;font-size:11px}.shell{padding:15px 24px 80px}.study{padding:13px}.landmark{margin-bottom:26px}}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--paper:#161e28;--ink:#edf1f7;--muted:#b9c4d3;--border:#3b4b5c;--surface:#222c38;--blue:#9bc0fa;--accent:#304b69}.study{background:#23374f;border-color:#466b95}.study p,.metrics{color:#d1dff1}.report{background:#263f5c}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header id="head"><div class="brand">scro<em>LL</em>bar <span style="font-size:10px;font-weight:550;letter-spacing:0;color:var(--muted)">/ recognition lab</span></div>
+<div class="head-actions"><button id="mode" aria-pressed="false">Preview rail: ON</button><button id="outline-toggle">Contents</button><button id="reset">Reset</button></div></header>
+<div class="shell"><main class="document" id="document">
+<div class="eyebrow">Experiment 01 · Retrieval rather than orientation</div>
+<h1>Find what you half remember.</h1>
+<p class="lead">An index should reveal what is <em>not</em> on screen. Compare ordinary scrolling and a Contents outline against a preview rail that reveals off-screen figures, tables and passages without moving the document.</p>
+<div class="explanation"><strong>How it works</strong><p>Grab the blue thumb on the right and drag. The small card previews a distinct landmark elsewhere in the document; the document stays put until release. Move your finger at least 150px inward and release to cancel. After jumping, choose <strong>Back</strong> to return exactly where you started. Toggle the preview rail off for the baseline.</p></div>
+<div class="study" id="study">
+<h2>Try a retrieval task</h2>
+<p id="prompt">Select a memory cue and press Start. The same task can be repeated in either navigation mode.</p>
+<div class="actions"><select id="task" aria-label="Select retrieval task"><option value="0">Find a distinctive figure</option><option value="1">Find a comparison table</option><option value="2">Find a remembered sentence</option><option value="3">Find a code example</option></select><button class="action primary" id="start">Start task</button><button class="action" id="abandon">Abandon</button></div>
+<div class="metrics" id="metrics" role="status" aria-live="polite">No task running. This study stores measurements only in your browser until you export them.</div>
+<div class="actions"><button class="action" id="export">Export JSON</button><button class="action" id="export-csv">Export CSV</button></div><pre id="report" class="report"></pre>
+</div>
+<div id="chapters"></div>
+</main><aside class="desktop-aside"><h3>Contents</h3><div class="outline" id="outline"></div><p>Use the outline to navigate by known chapter names. It does not give away the memory-based task answer.</p></aside></div>
+<div id="rail"><div class="rail-track"></div><div id="marks"></div><div class="rail-thumb"></div><div class="rail-grip" id="grip" role="slider" tabindex="0" aria-label="Preview document landmarks" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Start of document" aria-orientation="vertical"></div><div class="preview" id="preview"><div class="meta" id="pretype"></div><strong id="pretitle"></strong><div id="preart"></div><small id="precaption"></small><footer id="prefooter">Release to visit · move inward to cancel</footer></div></div>
+<div id="floating"></div>
+<script type="module">
+import { clamp, thumbGeometry, pointerToOffset, offsetToThumb, nearestLandmark, targetScroll, shouldShowBack, isCancelled, trialOrigin } from './math.mjs';
+const $ = s => document.querySelector(s);
+const doc = $('#document'), chapters = $('#chapters'), grip = $('#grip'), rail = $('#rail'), marks = $('#marks'), floating = $('#floating'), preview = $('#preview');
+const content = [
+ ['heat','Figure','The coastal heatmap','Warm and cool vertical bands juxtapose three habitats.','Coastal heat-map', 'Three seasons of observation show a blue-red mosaic across the estuary.'],
+ ['quote','Passage','The lighthouse paradox','“A signal can be bright and still disappear in noise.”','Bright signal in noise','Confidence is not evidence by itself.'],
+ ['table','Table','Urban signal comparison','The row with NOISE has the highest value, while RECALL is lowest.','Noise highest, recall lowest','Noise: 89, precision: 51, recall: 22.'],
+ ['rings','Figure','Orbital sampling','Concentric amber and blue rings around a dark center.','Amber center with blue halo','Compare the same event at different spatial radii.'],
+ ['grid','Figure','Baseline geometry','Sparse grid lines reveal the absence of a common coordinate system.','Grid with no axis','Why one coordinate system hides alternative explanations.'],
+ ['code','Code','Threshold filter','if (score > 0.78) retain(item)','Threshold comparison','Filter candidates using a score threshold.'],
+ ['wave','Figure','Migration routes','A blue loop creates an asymmetric path across the map.','Blue asymmetric loop','A returning route is not necessarily a repeated journey.'],
+ ['quote','Passage','The observation rule','“The absence of a trace is not a trace of absence.”','No trace of absence','A negative observation has limited evidentiary value.'],
+ ['table','Table','Cross-domain anomalies','A table with DELTA, GAMMA and THETA signals; GAMMA has 74 units.','Gamma 74','Delta 42, Gamma 74, Theta 19.'],
+ ['heat','Figure','Temperature stripes','A sequence of alternating salmon, blue and cream bands.','Alternating bands','Temperature contrasts between sampled regions.'],
+ ['code','Code','Cluster assignment','group = nearest(point, centroids)','Nearest centroid','Place each record into the closest cluster.'],
+ ['rings','Figure','Signal boundaries','Nested circles reveal a ring-shaped uncertainty boundary.','Nested circles','Spatial aggregation can conceal uneven coverage.'],
+ ['quote','Passage','The delayed explanation','“What seemed random was merely observed too early.”','Observed too early','Long time horizons alter seemingly noisy patterns.'],
+ ['table','Table','Recovery comparison','A table contrasting TIME, ERRORS and RETURNS.','Returns comparison','Time 61, errors 3, returns 9.'],
+ ['wave','Figure','Network folding','A looped blue form illustrates a hidden return route.','Blue network loop','Reentry edges turn a tree into a graph.'],
+ ['code','Code','Reversible traversal','history.push({ offset: scrollTop })','Save exact offset','Record precise offsets rather than estimated sections.'],
+ ['grid','Figure','Sample geometry','A quiet gray grid showing unobserved cells.','Gray grid','Evenly spaced samples can overlook narrow transitions.'],
+ ['quote','Passage','The final distinction','“A useful map shows what the view cannot.”','Useful map','An index should add information rather than duplicate it.']
+];
+const tasks=[
+ {target:3, prompt:'You previously saw a diagram with a warm amber center and blue concentric rings. Find that diagram.',kind:'figure'},
+ {target:8, prompt:'You remember a comparison table where GAMMA had a value of 74. Locate it.',kind:'table'},
+ {target:12,prompt:'Find the passage that suggested apparently random events may simply have been observed too early.',kind:'passage'},
+ {target:15,prompt:'Locate the code example that saves an exact scroll offset for reversible navigation.',kind:'code'}
+];
+const names=['Origins of the evidence','A field of signals','Reading against noise','Where patterns diverge','The unseen variable','Accumulated observations','A misleading correlation','Provisional interpretation','Evidence in context','Research without a map','Comparing uncertain records','Between two boundaries','The role of timing','Recovery and return','Graph structures','Preserving context','Missing observations','A map of the unseen'];
+const filler=[
+ 'An investigator often remembers a distinctive relationship without retaining its title or location. Structural headings cannot substitute for this imperfect memory.',
+ 'The difference between a useful cue and a repeated label is whether it adds information about an unseen destination. In this study, a figure, an excerpt, a table or a code sample provides the discriminating cue.',
+ 'A location in a long document may be easy to navigate to by chapter when its title is known, but much harder when only its visual appearance or conceptual contents remain familiar.'
+];
+function drawing(d){const [type,,,,short,details]=d;if(type==='table')return '<div class="art table"><table><tr><th>Signal</th><th>Value</th></tr><tr><td>'+(['Urban signal comparison','Cross-domain anomalies','Recovery comparison'].includes(d[2]) ? (d[2]==='Cross-domain anomalies'?'GAMMA':'NOISE') : 'INDEX')+'</td><td>'+ (d[2]==='Cross-domain anomalies'?'74':d[2]==='Urban signal comparison'?'89':'61')+'</td></tr><tr><td>RECALL</td><td>22</td></tr></table></div>';
+ if(type==='code')return '<div class="art code">'+(d[2]==='Reversible traversal'?'history.push({ offset: scrollTop })':d[2]==='Threshold filter'?'if (score &gt; 0.78) retain(item)':'group = nearest(point, centroids)')+'</div>';
+ if(type==='quote')return '<div class="art quote">'+(d[2]==='The observation rule'?'“The absence of a trace is not a trace of absence.”':d[2]==='The delayed explanation'?'“What seemed random was merely observed too early.”':d[2]==='The final distinction'?'“A useful map shows what the view cannot.”':'“A signal can be bright and still disappear in noise.”')+'</div>';
+ return '<div class="art '+type+'" aria-label="'+short+'"></div>';}
+const elements=[];
+for(let i=0;i<content.length;i++){
+ const d=content[i],section=document.createElement('section');section.className='chapter';section.id='chapter-'+i;
+ section.innerHTML='<h2>Chapter '+(i+1)+': '+names[i]+'</h2><p>'+filler[i%3]+'</p><p>'+filler[(i+1)%3]+'</p><div class="landmark" id="landmark-'+i+'"><div class="landmark-top"><span>'+d[1]+' · '+(i+1)+'</span><span>Observation note</span></div>'+drawing(d)+'<div class="caption">'+d[2]+' — '+d[3]+'</div><div class="matched"><span class="kind">'+d[5]+'</span><button class="select-target" data-index="'+i+'">This is it</button></div></div><p>'+filler[(i+2)%3]+'</p>';
+ chapters.append(section);elements.push(section.querySelector('.landmark'));
+ const b=document.createElement('button');b.textContent='Chapter '+(i+1)+': '+names[i];b.onclick=()=>navigate(section.offsetTop-headerHeight(), 'outline');$('#outline').append(b);
+}
+let geometry={maxScroll:1,thumbHeight:40,travel:1},railTop=80,railH=500,items=[],drag=null,previewItem=null,keyboardOffset=null,showRail=true,lastOrigin=null,returnButton=null,returnTimer=0,measurementPending=0,renderPending=0,activity=null,record=[],completed=false,visited=new Set(),lastOffset=0,scrollEvents=0;
+const scrollEl=document.scrollingElement;
+function headerHeight(){return $('#head').getBoundingClientRect().height}
+const scrollToOffset=to=>{const before=scrollEl.style.scrollBehavior;scrollEl.style.scrollBehavior='auto';scrollEl.scrollTop=clamp(to,0,geometry.maxScroll);scrollEl.style.scrollBehavior=before;scheduleRender()};
+function measure(){const top=headerHeight()+12, bottom=14+parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom')||'0');railTop=top;railH=Math.max(0,innerHeight-top-bottom);geometry=thumbGeometry(innerHeight,scrollEl.scrollHeight,railH);rail.style.setProperty('--railTop',railTop+'px');rail.style.setProperty('--railHeight',railH+'px');rail.style.setProperty('--railLeft',(innerWidth-21)+'px');rail.style.setProperty('--thumbH',geometry.thumbHeight+'px');items=elements.map((element,id)=>({id,el:element,top:element.getBoundingClientRect().top+scrollEl.scrollTop,...{data:content[id]}})).sort((a,b)=>a.top-b.top);const wasHidden=rail.hidden;rail.hidden=!showRail||geometry.maxScroll<=0;if(wasHidden!==rail.hidden)rail.setAttribute('aria-hidden',String(rail.hidden));paintMarks();scheduleRender()}
+function scheduleMeasure(){if(!measurementPending)measurementPending=requestAnimationFrame(()=>{measurementPending=0;measure()})}
+function scheduleRender(){if(!renderPending)renderPending=requestAnimationFrame(()=>{renderPending=0;const y=offsetToThumb(scrollEl.scrollTop,geometry.travel,geometry.maxScroll);rail.style.setProperty('--thumbY',y+'px');const offset=drag?drag.offset:keyboardOffset===null?scrollEl.scrollTop:keyboardOffset;grip.setAttribute('aria-valuenow',String(Math.round(100*offset/Math.max(1,geometry.maxScroll))));const near=nearestLandmark(items,offset+headerHeight());grip.setAttribute('aria-valuetext',near?near.data[2]:'Document');if(drag||keyboardOffset!==null)renderPreview(near)})}
+function paintMarks(){marks.replaceChildren();if(!showRail)return;for(const item of items){const b=document.createElement('div');b.className='rail-mark'+(visited.has(item.id)?' visited':'')+(previewItem?.id===item.id?' active':'');b.style.top=(offsetToThumb(item.top,geometry.travel,geometry.maxScroll)+geometry.thumbHeight/2)+'px';marks.append(b)}}
+function renderPreview(item){previewItem=item;if(!item)return;$('#pretype').textContent=item.data[1]+' · '+(item.id+1)+' / '+items.length;$('#pretitle').textContent=item.data[2];$('#preart').innerHTML=drawing(item.data);$('#precaption').textContent=item.data[3];$('#prefooter').textContent=drag?.cancelled?'Release to cancel': 'Release / Enter to visit · Escape to cancel';const y=offsetToThumb(drag?drag.offset:keyboardOffset===null?scrollEl.scrollTop:keyboardOffset,geometry.travel,geometry.maxScroll);rail.style.setProperty('--previewY',clamp(y+geometry.thumbHeight/2-100,0,Math.max(0,railH-220))+'px');rail.classList.toggle('cancel',Boolean(drag?.cancelled));rail.classList.add('rail-previewing');}
+function hidePreview(){rail.classList.remove('rail-previewing','cancel');previewItem=null;keyboardOffset=null;paintMarks()}
+function showReturn(origin){clearTimeout(returnTimer);returnButton?.remove();const button=document.createElement('button');button.className='return';button.textContent='← Back to exact previous position';button.onclick=()=>{if(activity)activity.returns++;scrollToOffset(origin);button.remove();returnButton=null;clearTimeout(returnTimer)};floating.append(button);returnButton=button;returnTimer=setTimeout(()=>{button.remove();if(returnButton===button)returnButton=null},12000)}
+function navigate(offset,method){const origin=scrollEl.scrollTop;scrollToOffset(offset);lastOrigin=origin;if(activity)activity.jumps++;if(shouldShowBack(origin,scrollEl.scrollTop,innerHeight))showReturn(origin);visited.add(nearestLandmark(items,offset+headerHeight())?.id);paintMarks();if(method==='preview')grip.focus({preventScroll:true})}
+function pointerBegin(e){if(!showRail||drag||(e.pointerType==='mouse'&&e.button!==0))return;const y=offsetToThumb(scrollEl.scrollTop,geometry.travel,geometry.maxScroll);drag={id:e.pointerId,start:scrollEl.scrollTop,grab:e.clientY-railTop-y,offset:scrollEl.scrollTop,cancelled:false};grip.setPointerCapture(e.pointerId);rail.classList.add('rail-previewing');e.preventDefault();scheduleRender()}
+function pointerMove(e){if(!drag||drag.id!==e.pointerId)return;e.preventDefault();drag.cancelled=isCancelled(e.clientX,innerWidth,150,document.dir==='rtl');drag.offset=pointerToOffset(e.clientY,drag.grab,railTop,geometry.travel,geometry.maxScroll);if(drag.cancelled)drag.offset=drag.start;scheduleRender()}
+function pointerEnd(e,cancel=false){if(!drag||drag.id!==e.pointerId)return;const active=drag;drag=null;if(!cancel&&!active.cancelled){const target=nearestLandmark(items,active.offset+headerHeight());if(target){visited.add(target.id);navigate(targetScroll(target.top,headerHeight(),geometry.maxScroll),'preview')}}hidePreview();if(grip.hasPointerCapture(e.pointerId))grip.releasePointerCapture(e.pointerId);scheduleRender()}
+grip.addEventListener('pointerdown',pointerBegin);grip.addEventListener('pointermove',pointerMove);grip.addEventListener('pointerup',e=>pointerEnd(e));grip.addEventListener('pointercancel',e=>pointerEnd(e,true));grip.addEventListener('lostpointercapture',e=>{if(drag?.id===e.pointerId)pointerEnd(e,true)});
+grip.addEventListener('keydown',e=>{if(!showRail)return;const keys=['ArrowUp','ArrowDown','PageUp','PageDown','Home','End','Enter','Escape'];if(!keys.includes(e.key))return;e.preventDefault();if(e.key==='Escape'){hidePreview();scheduleRender();return}if(e.key==='Enter'){const target=nearestLandmark(items,(keyboardOffset??scrollEl.scrollTop)+headerHeight());if(target)navigate(targetScroll(target.top,headerHeight(),geometry.maxScroll),'preview');hidePreview();return}const current=nearestLandmark(items,(keyboardOffset??scrollEl.scrollTop)+headerHeight());const at=current?items.indexOf(current):0;const next=e.key==='Home'?0:e.key==='End'?items.length-1:clamp(at+({ArrowUp:-1,ArrowDown:1,PageUp:-4,PageDown:4}[e.key]||0),0,items.length-1);keyboardOffset=items[next].top-headerHeight();renderPreview(items[next]);scheduleRender()});
+$('#mode').onclick=()=>{showRail=!showRail;$('#mode').textContent='Preview rail: '+(showRail?'ON':'OFF');$('#mode').setAttribute('aria-pressed',String(!showRail));if(!showRail){drag=null;hidePreview()}measure()};
+$('#outline-toggle').onclick=()=>{const side=$('.desktop-aside');if(getComputedStyle(side).display==='none'){const old=$('#modal-outline');if(old){old.remove();return}const m=document.createElement('aside');m.id='modal-outline';m.style.cssText='position:fixed;z-index:22;left:12px;right:65px;top:70px;max-height:70dvh;overflow:auto;display:block';m.innerHTML='<h3>Contents (tap a chapter)</h3><div class="outline"></div><button class="action" id="close-outline">Close</button>';m.querySelector('.outline').append(...[...$('#outline').children].map(btn=>{const b=btn.cloneNode(true);b.onclick=()=>{btn.click();m.remove()};return b}));floating.append(m);m.querySelector('#close-outline').onclick=()=>m.remove()}else side.scrollIntoView({behavior:'instant',block:'nearest'})};
+document.addEventListener('click',e=>{const b=e.target.closest('.select-target');if(!b)return;const id=Number(b.dataset.index);if(!activity){$('#metrics').textContent='Start a task above to record a result.';return}const correct=id===activity.target;activity.attempts++;if(!correct){activity.errors++;b.textContent='Not the target — try again';setTimeout(()=>b.textContent='This is it',1200);$('#metrics').textContent='Not quite. Continue searching. Incorrect selections: '+activity.errors;return}completeTask()});
+function resetStudy(){activity=null;completed=false;$('#metrics').textContent='No task running. Metrics remain local until export.';$('#prompt').textContent='Select a memory cue and press Start. The same task can be repeated in either navigation mode.'}
+$('#reset').onclick=()=>{resetStudy();scrollToOffset(0);hidePreview();returnButton?.remove();visited=new Set();paintMarks()};
+$('#start').onclick=()=>{if(activity)finishTrial('restarted');const index=Number($('#task').value),task=tasks[index];const origin=trialOrigin(items[task.target].top,geometry.maxScroll);scrollToOffset(origin);returnButton?.remove();lastOrigin=null;scrollEvents=0;activity={task:index,taskKind:task.kind,target:task.target,mode:showRail?'preview':'baseline',start:performance.now(),origin,errors:0,attempts:0,jumps:0,returns:0,scrollEvents:0,status:'running'};completed=false;$('#prompt').textContent=task.prompt;$('#metrics').textContent='Task running · '+(showRail?'Preview rail enabled':'Native scrolling + Contents only')+'. Tap “This is it” on the matching item.'};
+function finishTrial(status){if(!activity)return;const a=activity;const entry={task:a.task,kind:a.taskKind,mode:a.mode,status,elapsedMs:Math.round(performance.now()-a.start),errors:a.errors,attempts:a.attempts,jumps:a.jumps,returns:a.returns,scrollEvents:a.scrollEvents,correct:status==='completed'};record.push(entry);activity=null;$('#metrics').textContent=status==='completed'?'Found in '+(entry.elapsedMs/1000).toFixed(1)+'s · '+entry.errors+' wrong attempts · '+entry.jumps+' jumps.': 'Task '+status+' · '+(entry.elapsedMs/1000).toFixed(1)+'s.';$('#report').textContent=JSON.stringify(record,null,2);completed=status==='completed'}
+function completeTask(){finishTrial('completed')}
+$('#abandon').onclick=()=>finishTrial('abandoned');
+function download(text,type,name){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$('#export').onclick=()=>download(JSON.stringify({schema:1,study:'recognition-rail',records:record},null,2),'application/json','scrollbar-study.json');
+$('#export-csv').onclick=()=>{const keys=['task','kind','mode','status','elapsedMs','correct','errors','attempts','jumps','returns','scrollEvents'];download([keys.join(','),...record.map(r=>keys.map(k=>r[k]).join(','))].join('\n'),'text/csv','scrollbar-study.csv')};
+let sawScroll=false;window.addEventListener('scroll',()=>{if(activity)activity.scrollEvents++;sawScroll=true;scheduleRender()},{passive:true});
+const observer=new ResizeObserver(scheduleMeasure);observer.observe(doc);window.addEventListener('resize',scheduleMeasure);window.visualViewport?.addEventListener('resize',scheduleMeasure);doc.addEventListener('load',scheduleMeasure,true);
+measure();
+window.recognitionLab={getState:()=>({showRail,activity,record,items:items.map(({id,top,data})=>({id,top,title:data[2]})),scrollTop:scrollEl.scrollTop,origin:lastOrigin}),getMetrics:()=>record.slice(),reset:()=>$('#reset').click()};
+</script>
+</body></html>
