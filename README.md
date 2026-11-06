@@ -2,11 +2,11 @@
 
 **A touch-first scrollbar for long, dense documents.** Skim by recognition with a heading reel, jump precisely through Contents, and return to the exact previous scroll position.
 
-## [Try the live interactive demo](https://htmlpreview.github.io/?https://github.com/rishabharora-kk/scroLLbar/blob/main/index.html)
+## [Try the live interactive demo](https://rishabharora-kk.github.io/scroLLbar/)
 
 [GitHub Pages demo](https://rishabharora-kk.github.io/scroLLbar/) · [Demo source](index.html) · [Library demo](demo/index.html) · [Implementation](src/) · [Tests](tests/)
 
-The **root `index.html` is completely self-contained**: open directly in a browser, without a build, package manager, server, or dependencies. The HTML Preview link renders that exact GitHub file in a browser (verified with the full 38-chapter document). For an alternative, [raw.githack](https://raw.githack.com/rishabharora-kk/scroLLbar/main/index.html) serves it after a one-time external-content confirmation. A GitHub Pages workflow is included; the owner may need to choose **Settings → Pages → Source: GitHub Actions** before the GitHub Pages URL works.
+The **root `index.html` is completely self-contained**: open directly in a browser, without a build, package manager, server, or dependencies. The [official GitHub Pages demo](https://rishabharora-kk.github.io/scroLLbar/) is deployed from `main` and has been verified to render all 38 chapters. [HTML Preview](https://htmlpreview.github.io/?https://github.com/rishabharora-kk/scroLLbar/blob/main/index.html) is an alternative direct-from-repository preview. GitHub Pages deployment is automated from `main` by the included workflow.
 
 ### Demo gestures
 
