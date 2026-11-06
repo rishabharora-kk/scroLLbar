@@ -1,0 +1,13 @@
+{
+  "name": "intent-first-scrollbar",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": ["./src/core.css", "./src/modules.css"],
+  "scripts": {
+    "test": "node --test tests/math.test.mjs",
+    "typecheck": "tsc -p tests/tsconfig.json --noEmit",
+    "check": "npm test && npm run typecheck && find src -name '*.mjs' -exec node --check {} \\;",
+    "demo": "python3 -m http.server 8765"
+  }
+}

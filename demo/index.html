@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f6fa" />
+  <title>Intent scrollbar — touch-first document demo</title>
+  <link rel="stylesheet" href="../src/core.css" />
+  <link rel="stylesheet" href="../src/modules.css" />
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; }
+    body { margin: 0; background:#f5f6fa; color:#1c283a; font-family:system-ui,-apple-system,sans-serif; }
+    header { position: sticky; top: 0; z-index: 5; height: 56px; background:rgba(250,251,253,.96); border-bottom:1px solid #e3e5ef; backdrop-filter:blur(14px); display:flex;align-items:center;justify-content:space-between;padding:0 22px; }
+    header strong { letter-spacing:-.04em; }
+    header button { background:transparent; border:1px solid #d3d9e2; border-radius:20px;padding:7px 10px;cursor:pointer; }
+    main { max-width: 690px; margin:0 auto; padding:44px 24px 190px; }
+    .eyebrow { letter-spacing:.19em;text-transform:uppercase;font-size:11px;color:#4268ad;font-weight:700; }
+    h1 { font-size:clamp(34px,6vw,54px);line-height:1.12;letter-spacing:-.045em; }
+    h2 { font-size:27px;letter-spacing:-.025em;line-height:1.26;margin-top:54px; }
+    h3 { margin-top:32px;font-size:19px; }
+    p { color:#586579;line-height:1.85;font-size:15px; }
+    .lede { font-size:17px;line-height:1.8; }
+    figure { margin:26px 0 30px;border:1px solid #dce3ef;padding:16px;border-radius:12px; }
+    figure .graphic { height:125px; border-radius:7px; background:repeating-linear-gradient(115deg,#d1e3ff 0 12px,#e8f0ff 12px 25px);display:flex;justify-content:center;align-items:center;font-weight:650;color:#41629a; }
+    figcaption,caption { font-size:12px;color:#7d8798;padding-top:10px;text-align:left; }
+    table { width:100%;border-collapse:collapse;margin:26px 0;font-size:13px; }
+    th,td { padding:12px;border-bottom:1px solid #dce3ef;text-align:left; }
+    .intro { border-left:3px solid #5c84df;padding-left:20px; }
+    .demo-controls { display:flex;gap:10px; }
+    @media(max-width:550px) { header { padding:0 13px; } main { padding:22px 24px 140px 20px; } .demo-controls { gap:5px; } header button { font-size:11px; padding:6px 8px; } }
+    @media(prefers-color-scheme:dark) { body{background:#171b22;color:#e9edf4}header{background:#20252c;border-color:#303d4d}header button{color:inherit;border-color:#495366}p{color:#aeb8c8}figure,th,td{border-color:#364354}figure .graphic{background:repeating-linear-gradient(115deg,#2d4467 0 12px,#253a5e 12px 25px);color:#abc8fa} }
+  </style>
+</head>
+<body>
+  <header data-sticky-header><strong>Atlas / Research Notes</strong><div class="demo-controls"><button id="mode">Core only</button><button id="toggle-contents">Contents: off</button></div></header>
+  <main id="document">
+    <div class="eyebrow">Field guide · Volume II</div>
+    <h1>Patterns of information</h1>
+    <p class="lede intro">A long-form document made to stress-test a touch-first navigation rail. Grip the handle on the right edge. Move up and down, pull inward to cancel, and explore where a section leads.</p>
+    <div id="chapters"></div>
+  </main>
+  <script type="module">
+    import { createScrollbar, createIntentScrollbar } from '../src/index.mjs';
+    const chapter = document.querySelector('#chapters');
+    for (let i = 1; i <= 38; i++) {
+      const part = document.createElement('section');
+      part.innerHTML = `<h2>Chapter ${i}: ${['Signal patterns in dense data','Observations and evidence','Contradictions and interpretation','Emergent structure in networks','What remains unseen'][i % 5]}</h2><p>Every long document contains an implicit map: headings, comparisons, visual landmarks, and the places we last recognized. By scrubbing along this rail, readers can travel across sections without losing the page itself.</p><h3>${['Methods and assumptions','How the evidence shifts','Limitations and counterexamples'][i % 3]}</h3><p>Signals acquire meaning through their relationships. An observation in isolation may be unremarkable, yet the same detail viewed in context can mark the beginning of a larger pattern. This paragraph is intentionally long enough to make the scrolling behavior visible as the thumb moves. Recognition is more important than precision during scrubbing.</p>${i % 2 === 0 ? `<figure aria-label="Figure ${i/2}"><div class="graphic">Figure ${i/2}</div><figcaption>Figure ${i/2}. Distribution of observations across domains</figcaption></figure>` : `<table><caption>Table ${(i+1)/2}. Comparative observations</caption><thead><tr><th>Factor</th><th>Finding</th></tr></thead><tbody><tr><td>Position</td><td>Relative</td></tr><tr><td>Confidence</td><td>Moderate</td></tr></tbody></table>`}<p>Retaining landmarks and exact return locations helps navigation feel reversible rather than destructive. The page remains visible throughout the gesture, and the compact reel never expands when the title is long.</p>`;
+      chapter.append(part);
+    }
+    let instance;
+    let contents = false;
+    let coreOnly = false;
+    function mount() {
+      instance?.destroy();
+      const config = { root: document.querySelector('#document'), options: { contents, ...(coreOnly ? { reel: false, contents: false, backChip: false, landmarks: false, cancel: false, snap: false, haptics: false, pageNumbers: false } : {}) } };
+      instance = coreOnly ? createScrollbar(config) : createIntentScrollbar(config);
+      window.intentScrollbar = instance;
+    }
+    document.querySelector('#mode').onclick = e => { coreOnly = !coreOnly; e.target.textContent = coreOnly ? 'Full mode' : 'Core only'; mount(); };
+    document.querySelector('#toggle-contents').onclick = e => { contents = !contents; e.target.textContent = `Contents: ${contents ? 'on':'off'}`; if(!coreOnly) mount(); };
+    mount();
+  </script>
+</body>
+</html>
