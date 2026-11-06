@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f6fa">
+<title>scroLLbar — Explore the gesture</title>
+<style>
+:root{color-scheme:light;--bg:#f7f8fb;--fg:#1a2440;--muted:#66728b;--line:#e1e5ee;--accent:#436bce;--surface:#fff}
+*{box-sizing:border-box}html{scroll-behavior:auto;scrollbar-width:none}html::-webkit-scrollbar{display:none}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+header{position:sticky;top:0;z-index:7;min-height:60px;padding:10px clamp(12px,3vw,32px);background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-weight:800;letter-spacing:-.06em;font-size:21px;white-space:nowrap}.logo span{color:var(--accent)}
+nav{display:flex;gap:7px}button{font:inherit;cursor:pointer}nav button,.sheet button,.back{border:1px solid var(--line);border-radius:11px;padding:8px 11px;background:var(--surface);color:var(--fg);font-size:12px}
+nav button[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+main{width:min(100% - 48px,710px);margin:auto;padding:48px 8px 145px}
+.kicker{font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--accent);font-weight:800}
+h1{font-size:clamp(39px,7vw,69px);line-height:1.08;letter-spacing:-.055em;margin:14px 0 18px}
+h2{font-size:clamp(23px,4.5vw,34px);letter-spacing:-.04em;line-height:1.18;margin:62px 0 16px}
+h3{font-size:19px;letter-spacing:-.025em;margin-top:34px}
+p{font-size:15px;color:var(--muted);line-height:1.9;margin:15px 0} .lead{font-size:17px;line-height:1.85}
+.instructions{border-left:3px solid var(--accent);padding:8px 17px;margin:26px 0 40px;background:color-mix(in srgb,var(--accent) 5%,transparent)}
+figure{margin:24px 0;padding:13px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.graphic{height:145px;border-radius:9px;display:grid;place-items:center;background:repeating-linear-gradient(115deg,#d6e3fa 0 15px,#eaf0fc 15px 30px);color:#4064a0;font-weight:700}
+figcaption,caption{font-size:12px;color:var(--muted);padding-top:10px;text-align:left}
+table{border-collapse:collapse;width:100%;margin:20px 0;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left}
+#rail{position:fixed;z-index:12;top:var(--top,74px);left:var(--left,calc(100vw - 22px));height:var(--height,80vh);width:8px;pointer-events:none}
+.track{position:absolute;inset:0;background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:15px;pointer-events:none}
+.thumb{position:absolute;width:7px;height:var(--thumb,40px);top:0;left:0;border-radius:12px;background:var(--accent);opacity:.35;transform:translateY(var(--y,0px));pointer-events:none;transition:opacity .2s}
+#rail.scrolling .thumb{opacity:.8}#rail.dragging .thumb{opacity:1}
+.grip{position:absolute;height:calc(var(--thumb,40px) + 24px);width:44px;left:-36px;top:0;transform:translateY(calc(var(--y,0px) - 12px));touch-action:none;cursor:grab;pointer-events:auto;border-radius:12px;outline:none}
+.grip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mark{position:absolute;right:9px;width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.55;pointer-events:none}.mark.heading{width:11px;height:3px;border-radius:2px;right:8px;opacity:.75}
+.reel{position:absolute;right:calc(100% + 21px);width:min(236px,calc(100vw - 85px));height:146px;top:0;transform:translateY(var(--reel-y,0px));border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 15px 45px #0b285025;padding:14px 13px 10px;opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;color:var(--fg)}
+.dragging .reel{opacity:1;visibility:visible}.reel.cancelled{background:#e4e6eb;color:#505868}
+.reel-title{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
+.reel-window{height:90px;overflow:hidden;position:relative;mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent)}
+.reel-band{position:absolute;top:30px;left:0;right:0;height:30px;border-radius:7px;background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.reel-row{position:absolute;left:9px;right:8px;height:30px;line-height:30px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;will-change:transform}
+.reel-row.current{font-weight:750;color:var(--accent)}
+.reel-info{font-size:11px;color:var(--muted);height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+.back{position:fixed;z-index:15;bottom:calc(19px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);max-width:min(85vw,380px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 8px 32px #122a4a24;border-color:var(--accent)}
+.sheet-wrap{position:fixed;inset:0;z-index:30;background:#0d19385c;display:grid;align-items:end}
+.sheet{max-height:75dvh;overflow:auto;background:var(--surface);border-radius:23px 23px 0 0;padding:18px 22px calc(24px + env(safe-area-inset-bottom));color:var(--fg)}
+.sheet-top{display:flex;align-items:center;justify-content:space-between;position:sticky;top:-18px;background:var(--surface);padding:6px 0 15px}
+.sheet h2{margin:0;font-size:22px}.sheet button{width:100%;text-align:left;margin:3px 0;padding:12px 14px}.sheet button.active{background:color-mix(in srgb,var(--accent) 11%,var(--surface));border-color:var(--accent)}
+.sheet .close{width:auto}.status{position:fixed;bottom:12px;right:32px;color:var(--muted);font-size:10px;z-index:1}
+@media(max-width:480px){header{padding:8px 12px}.logo{font-size:17px}nav button{padding:7px;font-size:11px}main{width:calc(100% - 34px);padding:28px 0 130px}h2{margin-top:52px}.status{display:none}}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#151b25;--fg:#edf1fa;--muted:#b1bbcb;--line:#39465a;--accent:#92b2ff;--surface:#222c3b}.graphic{background:repeating-linear-gradient(115deg,#263d63 0 15px,#314b74 15px 30px);color:#d5e2ff}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header data-sticky-header><div class="logo">scro<span>LL</span>bar</div><nav><button id="core" aria-pressed="false">Core only</button><button id="toc" aria-pressed="false">Contents</button><button id="help">How to use</button></nav></header>
+<main id="document">
+<div class="kicker">Interactive research reader · 38 chapters</div>
+<h1>A map of what you remember.</h1>
+<p class="lead">Skim a long document by recognition, not by watching a tiny scroll indicator. This interactive demo contains 38 chapters, 77 headings and 38 figure/table landmarks.</p>
+<div class="instructions" id="instructions"><strong>Try the gesture</strong><p>Drag the thumb on the right to scrub. The headings roll by continuously. Move your finger 150px toward the middle to preview cancelling, then release. Jump more than 1.5 screens to reveal <strong>Back</strong>. Tap <strong>Contents</strong> for exact navigation. <strong>Core only</strong> disables every optional module.</p></div>
+<div id="chapters"></div>
+</main>
+<div id="rail"><div class="track"></div><div id="marks"></div><div class="thumb"></div><div id="grip" class="grip" role="slider" tabindex="0" aria-label="Document position" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="A map of what you remember."></div><div class="reel" id="reel"><div class="reel-title" id="reel-title">You are here</div><div class="reel-window"><div class="reel-band"></div><div id="rows"></div></div><div class="reel-info" id="reel-info"></div></div></div>
+<div id="overlays"></div>
+<div class="status">No dependencies · Touch + keyboard</div>
+<script>
+(()=>{
+'use strict';
+const $=q=>document.querySelector(q), clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const chapters=$('#chapters');
+const names=['Signal patterns in dense data','Observations and evidence','Contradictions and interpretation','Emergent structure in networks','What remains unseen'];
+for(let i=1;i<=38;i++){
+ const section=document.createElement('section');
+ section.innerHTML=`<h2>Chapter ${i}: ${names[i%5]}</h2><p>Every long document contains an implicit map: headings, comparisons, visual landmarks and the places we last recognized. Scrubbing this rail takes readers across sections without hiding the document itself.</p><h3>${['Methods and assumptions','How the evidence shifts','Limitations and counterexamples'][i%3]}</h3><p>Signals acquire meaning through relationships. One observation may seem unremarkable, but a second changes the interpretation. This section is intentionally dense enough to demonstrate how the scrollbar follows your finger without easing or delay, while the reel stays anchored to the thumb.</p>${i%2===0?`<figure><div class="graphic">Figure ${i/2}</div><figcaption>Figure ${i/2}. Distribution of observations across domains</figcaption></figure>`:`<table><caption>Table ${(i+1)/2}. Comparative observations</caption><thead><tr><th>Factor</th><th>Finding</th></tr></thead><tbody><tr><td>Position</td><td>Relative</td></tr><tr><td>Confidence</td><td>Moderate</td></tr></tbody></table>`}<p>Precise navigation is available through the Contents list. Scrubbing serves recognition instead of replacing search or a structured outline. The exact previous location is available from a temporary Back chip after a large jump.</p>`;
+ chapters.append(section);
+}
+const rail=$('#rail'),grip=$('#grip'),rows=$('#rows'),marks=$('#marks'),reel=$('#reel'),info=$('#reel-info'),title=$('#reel-title'),overlay=$('#overlays');
+const options={reel:true,contents:false,backChip:true,landmarks:true,cancel:true,snap:true,haptics:true,pageNumbers:false,cancelDistance:150,snapDistance:60,backThreshold:1.5,backTimeoutMs:9000,gripWidth:44,thumbMin:40,reelRowHeight:30,blurStartRowsPerSec:8};
+let data={headings:[],landmarks:[],top:70,height:500,thumb:40,travel:460,max:1,sticky:60,edge:0},drag=null,frame=0,measureFrame=0,idleTimer=0,backTimer=0,back=null,core=false,contents=false,lastSection=-1,velocity=0,lastSpeedTime=0,lastP=0,blurClear=0;
+const position=()=>document.scrollingElement.scrollTop;
+const setPosition=y=>{const el=document.scrollingElement,previous=el.style.scrollBehavior;el.style.scrollBehavior='auto';el.scrollTop=clamp(y,0,data.max);el.style.scrollBehavior=previous;};
+function sectionIndex(y=position()+30){let a=0,b=data.headings.length;while(a<b){const m=(a+b)>>1;if(data.headings[m].top<=y)a=m+1;else b=m;}return clamp(a-1,0,data.headings.length-1)}
+function progress(){const i=sectionIndex(),a=data.headings[i]?.top??0,b=data.headings[i+1]?.top;return i+(b===undefined?0:clamp((position()+30-a)/Math.max(1,b-a),0,.999999));}
+const byY=y=>data.travel>0?clamp(y,0,data.travel)/data.travel*data.max:0;
+const thumbY=()=>data.max>0?position()/data.max*data.travel:0;
+function jump(y,from=position()){setPosition(y);renderSoon();if(options.backChip&&Math.abs(position()-from)>data.height*options.backThreshold)showBack(from);}
+function showBack(from){clearTimeout(backTimer);back?.remove();const b=document.createElement('button');b.className='back';b.textContent='← Back to '+(data.headings[sectionIndex(from+30)]?.title||'previous position');b.onclick=()=>{clearTimeout(backTimer);setPosition(from);b.remove();back=null;renderSoon()};overlay.append(b);back=b;backTimer=setTimeout(()=>{b.remove();if(back===b)back=null},options.backTimeoutMs)}
+function measure(){const header=$('header').getBoundingClientRect(),safeTop=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;const sticky=header.top<=2?header.bottom:0;const inset=12;const top=Math.max(sticky+inset,safeTop+inset);const safeBottom=12;const height=Math.max(0,innerHeight-top-safeBottom);const max=Math.max(0,document.scrollingElement.scrollHeight-innerHeight);const thumb=clamp(innerHeight/document.scrollingElement.scrollHeight*height,Math.min(options.thumbMin,height),height);const rtl=getComputedStyle(document.documentElement).direction==='rtl';const edge=12+(rtl?6:0);const left=rtl?edge:innerWidth-edge-8;const headings=Array.from($('#document').querySelectorAll('h1,h2,h3,h4')).map(e=>({el:e,top:e.getBoundingClientRect().top+position(),title:e.textContent.trim(),level:Number(e.tagName[1])}));const landmarks=Array.from($('#document').querySelectorAll('figure,table')).map(e=>({el:e,top:e.getBoundingClientRect().top+position(),label:e.querySelector('figcaption,caption')?.textContent.trim()||e.tagName}));data={headings,landmarks,top,height,max,thumb,travel:Math.max(0,height-thumb),sticky,edge,rtl};rail.style.setProperty('--top',top+'px');rail.style.setProperty('--left',left+'px');rail.style.setProperty('--height',height+'px');rail.style.setProperty('--thumb',thumb+'px');grip.style.left=rtl?'0px':'-36px';grip.style.width=options.gripWidth+'px';rail.hidden=max===0;paintMarks();renderSoon();}
+function scheduleMeasure(){if(!measureFrame)measureFrame=requestAnimationFrame(()=>{measureFrame=0;measure()})}
+function paintMarks(){marks.replaceChildren();if(!options.landmarks)return;const topLevel=Math.min(...data.headings.map(h=>h.level));const add=(p,isHeading)=>{let el=document.createElement('div');el.className='mark'+(isHeading?' heading':'');el.style.top=(data.max?p/data.max*data.travel+data.thumb/2:0)+'px';marks.append(el)};for(const l of data.landmarks)add(l.top,false);for(const h of data.headings)if(h.level===topLevel)add(h.top,true)}
+function renderSoon(){if(!frame)frame=requestAnimationFrame(render)}
+function render(){frame=0;const y=thumbY();rail.style.setProperty('--y',y+'px');grip.setAttribute('aria-valuenow',String(Math.round(data.max?position()/data.max*100:0)));const idx=sectionIndex();grip.setAttribute('aria-valuetext',data.headings[idx]?.title||'Document');if(drag&&idx!==lastSection&&options.haptics&&navigator.vibrate)navigator.vibrate(6);lastSection=idx;if(!drag||!options.reel)return;const h=146,center=30+data.thumb/2;rail.style.setProperty('--reel-y',clamp(y+data.thumb/2-h/2,-data.top+12,data.height-h+12+y-y)+'px');const p=progress(),now=performance.now(),elapsed=Math.max(1,now-lastSpeedTime)/1000,instant=Math.abs(p-lastP)/elapsed;velocity=velocity*.7+instant*.3;lastP=p;lastSpeedTime=now;rows.style.filter='blur('+Math.min(1.6,Math.max(0,velocity-options.blurStartRowsPerSec)*.18)+'px)';clearTimeout(blurClear);blurClear=setTimeout(()=>{rows.style.filter='none'},90);const low=Math.max(0,Math.floor(p)-5),high=Math.min(data.headings.length-1,Math.floor(p)+5);rows.replaceChildren();for(let i=low;i<=high;i++){const row=document.createElement('div');row.className='reel-row'+(i===Math.floor(p)?' current':'');row.style.transform='translateY('+(30+30*(i-p))+'px)';row.textContent=data.headings[i].title;rows.append(row)}const landmark=data.landmarks.find(l=>l.top>=position()&&l.top<=position()+innerHeight*.8);info.textContent=(landmark?landmark.label+' on screen':'')||'Drag to explore · release to stay';title.textContent=drag.cancelled?'Release to cancel':'You are here';reel.classList.toggle('cancelled',drag.cancelled);}
+function begin(e){if(drag||data.max<=0||(e.pointerType==='mouse'&&e.button!==0))return;e.preventDefault();const y=thumbY();drag={id:e.pointerId,start:position(),grab:e.clientY-data.top-y,cancelled:false};grip.setPointerCapture(e.pointerId);rail.classList.add('dragging');lastSpeedTime=performance.now();lastP=progress();velocity=0;renderSoon()}
+function move(e){if(!drag||e.pointerId!==drag.id)return;e.preventDefault();const away=data.rtl?e.clientX:innerWidth-e.clientX;drag.cancelled=!!options.cancel&&away>options.cancelDistance;setPosition(drag.cancelled?drag.start:byY(e.clientY-drag.grab-data.top));renderSoon()}
+function finish(e,force=false){if(!drag||e.pointerId!==drag.id)return;const {start,cancelled}=drag;drag=null;rail.classList.remove('dragging');reel.classList.remove('cancelled');if(force||cancelled)setPosition(start);else if(options.snap&&data.max-position()>2){const visible=position()+data.sticky,closest=data.headings.filter(h=>Math.abs(h.top-visible)<=options.snapDistance).sort((a,b)=>Math.abs(a.top-visible)-Math.abs(b.top-visible))[0];if(closest)setPosition(closest.top-data.sticky)}if(!force&&!cancelled&&Math.abs(position()-start)>data.height*options.backThreshold&&options.backChip)showBack(start);renderSoon();if(grip.hasPointerCapture(e.pointerId))grip.releasePointerCapture(e.pointerId)}
+grip.onpointerdown=begin;grip.onpointermove=move;grip.onpointerup=e=>finish(e);grip.onpointercancel=e=>finish(e,true);grip.onlostpointercapture=e=>{if(drag&&drag.id===e.pointerId)finish(e,true)};
+grip.onkeydown=e=>{const delta={ArrowUp:-1,ArrowDown:1,PageUp:-3,PageDown:3}[e.key];if(delta===undefined&&!['Home','End'].includes(e.key))return;e.preventDefault();const i=sectionIndex(position()+data.sticky+30);const target=e.key==='Home'?0:e.key==='End'?data.headings.length-1:clamp(i+delta,0,data.headings.length-1);jump(data.headings[target].top-data.sticky)};
+window.addEventListener('scroll',()=>{rail.classList.add('scrolling');clearTimeout(idleTimer);idleTimer=setTimeout(()=>rail.classList.remove('scrolling'),650);renderSoon()},{passive:true});
+window.addEventListener('resize',scheduleMeasure);window.visualViewport?.addEventListener('resize',scheduleMeasure);
+const ro=new ResizeObserver(scheduleMeasure);ro.observe($('#document'));const mo=new MutationObserver(scheduleMeasure);mo.observe($('#document'),{childList:true,subtree:true});$('#document').addEventListener('load',scheduleMeasure,true);
+$('#core').onclick=e=>{core=!core;e.target.setAttribute('aria-pressed',String(core));e.target.textContent=core?'Full mode':'Core only';options.reel=!core;options.backChip=!core;options.landmarks=!core;options.cancel=!core;options.snap=!core;options.haptics=!core;if(core){contents=false;$('#toc').setAttribute('aria-pressed','false');back?.remove();back=null;reel.style.visibility='hidden'}else reel.style.visibility='';paintMarks()};
+function showContents(){const s=document.createElement('div');s.className='sheet-wrap';s.setAttribute('role','presentation');s.innerHTML='<div class="sheet" role="dialog" aria-modal="true" aria-label="Document contents"><div class="sheet-top"><h2>Contents</h2><button class="close" aria-label="Close contents">Close ×</button></div><div id="outline"></div></div>';overlay.append(s);const close=()=>{s.remove();$('#toc').focus()};s.querySelector('.close').onclick=close;s.onclick=e=>{if(e.target===s)close()};const outline=s.querySelector('#outline');for(let i=0;i<data.headings.length;i++){const h=data.headings[i],b=document.createElement('button');b.className=i===sectionIndex()?'active':'';b.style.paddingLeft=(14+(h.level-1)*12)+'px';b.textContent=h.title;b.onclick=()=>{const from=position();close();jump(h.top-data.sticky,from)};outline.append(b)}const escape=e=>{if(e.key==='Escape'){close();document.removeEventListener('keydown',escape)}};document.addEventListener('keydown',escape);s.querySelector('.close').focus()}
+$('#toc').onclick=e=>{if(core){$('#core').click()}e.target.setAttribute('aria-pressed','true');showContents();e.target.setAttribute('aria-pressed','false')};
+$('#help').onclick=()=>jump($('#instructions').getBoundingClientRect().top+position()-data.sticky);
+measure();window.scroLLbar={options,refresh:measure,jump,getState:()=>({...data,scrollTop:position()})};
+})();
+</script>
+</body>
+</html>
