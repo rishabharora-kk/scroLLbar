@@ -7,6 +7,9 @@ on:
       - 'experiments/recognition/**'
       - 'tests/recognition*'
       - '.github/workflows/recognition-checks.yml'
+concurrency:
+  group: recognition-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
