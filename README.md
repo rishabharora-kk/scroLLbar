@@ -1,5 +1,8 @@
 # scroLLbar
 
+> **New research prototype:** [Recognition Lab — preview-first retrieval](experiments/recognition/) compares off-screen landmark previews against ordinary scrolling and Contents. See [study protocol](experiments/recognition/README.md). The original heading-reel demo below remains the control.
+
+
 **A touch-first scrollbar for long, dense documents.** Skim by recognition with a heading reel, jump precisely through Contents, and return to the exact previous scroll position.
 
 ## [Try the live interactive demo](https://rishabharora-kk.github.io/scroLLbar/)
