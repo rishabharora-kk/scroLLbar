@@ -1,0 +1,24 @@
+/* Applied only to the scroller owned by this instance; prevents doubled native bars. */
+.is-hide-native-scrollbar { scrollbar-width: none !important; }
+.is-hide-native-scrollbar::-webkit-scrollbar { width: 0 !important; height: 0 !important; }
+.is-host {
+  --is-accent: #2563eb;
+  --is-surface: #ffffff;
+  --is-ink: #111827;
+  --is-muted: #667085;
+  --is-line: #cdd5df;
+  position: fixed; inset: 0; width: 0; height: 0;
+  z-index: 2147482000; pointer-events: none;
+  color: var(--is-ink); font: 13px/1.4 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.is-track { position: fixed; top: var(--is-track-top); left: var(--is-track-left); width: 8px; pointer-events: none; }
+.is-track::before { content: ''; position: absolute; inset: 0 3px; background: var(--is-line); border-radius: 4px; opacity: .25; }
+.is-thumb { position: absolute; left: 1px; top: 0; width: 6px; border-radius: 9px; background: var(--is-muted); opacity: .35; will-change: transform; transition: opacity .16s, background .16s; }
+.is-scrolling .is-thumb { opacity: .8; }
+.is-dragging .is-thumb { background: var(--is-accent); opacity: 1; transition: none; }
+.is-grip { position: absolute; top: 0; pointer-events: auto; touch-action: none; cursor: grab; border-radius: 20px; outline: 0; }
+.is-grip:active { cursor: grabbing; }
+.is-grip:focus-visible { outline: 2px solid var(--is-accent); outline-offset: -2px; background: color-mix(in srgb,var(--is-accent) 10%,transparent); }
+.is-host.is-no-scroll .is-track { display: none; }
+@media (prefers-color-scheme: dark) { .is-host { --is-surface: #202329; --is-ink:#f5f7fa; --is-muted:#a0aec0; --is-line:#667085; --is-accent:#79aaff; } }
+@media (prefers-reduced-motion: reduce) { .is-thumb { transition: none; } }
