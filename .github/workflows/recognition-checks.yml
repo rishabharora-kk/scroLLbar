@@ -1,0 +1,39 @@
+name: Recognition rail experimental checks
+on:
+  push:
+    branches: [experiment/recognition-rail]
+  pull_request:
+    paths:
+      - 'experiments/recognition/**'
+      - 'tests/recognition*'
+      - '.github/workflows/recognition-checks.yml'
+permissions:
+  contents: read
+jobs:
+  verification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check module syntax and math tests
+        run: |
+          node --check experiments/recognition/math.mjs
+          node --test tests/recognition.test.mjs
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('experiments/recognition/index.html').read_text()
+          assert '<script type="module">' in p
+          Path('/tmp/recognition-demo.mjs').write_text(p.split('<script type="module">',1)[1].split('</script>',1)[0].replace("from './math.mjs'", "from './math.mjs'"))
+          PY
+          node --check /tmp/recognition-demo.mjs
+      - name: Install Playwright Chromium
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify 390px mobile interactions
+        run: python3 tests/recognition.e2e.py
